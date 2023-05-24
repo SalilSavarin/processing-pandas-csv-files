@@ -87,17 +87,18 @@ def search_reader(df_reader, df_lending):
     :param df_lending: pandas.core.frame.DataFrame Выдача книг
     :return: pandas.core.frame.DataFrame Читателей
     """
-    date = datetime.date.today() - relativedelta(months=1)
+    date = datetime.date.today()
+    date_interval = datetime.date.today() - relativedelta(months=1)
     df_reader = df_reader
     df_lending = df_lending
     sql_select = '''
     SELECT r.name, COUNT(library_card_number) AS lend, "{0}" - DATE(r.date_of_birth) AS age
     FROM df_lending l
     JOIN df_reader r ON l.library_card_number = r.card_number
-    WHERE DATE(l.date_lend) >= "{0}"
+    WHERE DATE(l.date_lend) >= "{1}"
     GROUP BY library_card_number
-    ORDER BY lend DESC, "{0}" - DATE(r.date_of_birth)
-    '''.format(date)
+    ORDER BY lend DESC, age
+    '''.format(date, date_interval)
     select_result_df = ps.sqldf(sql_select, locals())
     return select_result_df
 

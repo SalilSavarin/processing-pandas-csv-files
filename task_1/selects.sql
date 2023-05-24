@@ -1,19 +1,20 @@
 --Найти города, в которых в 2016 году было издано больше всего книг.
-SELECT city_of_publishing, COUNT(*) AS books_published, receipt_date - 5 AS published_date
-    FROM df
-    WHERE receipt_date - 5 = 2016
-    GROUP BY city_of_publishing
-    ORDER BY books_published DESC;
+select city_of_publishing, count(*) as books_published, receipt_date - 5 as published_date
+    from df
+    where receipt_date - 5 = 2016
+    group by city_of_publishing
+    order by books_published desc;
 
-SELECT COUNT(title) as count_book
+--Вывести количество экземпляров книг «Война и мир» Л.Н.Толстого, которые находятся в библиотеке.
+select count(title) as count_book
     FROM df
     WHERE title LIKE 'Война и мир';
 
-
-
-SELECT r.name, COUNT(library_card_number) AS lend, "{0}" - DATE(r.date_of_birth) AS age
+-- Найти читателей, которые за последний месяц брали больше всего книг в библиотеке.
+-- При выводе выполнить сортировку читателей по возрасту (от молодых к старшим)
+SELECT r.name, count(library_card_number) AS lend, CURRENT_DATE() - date(r.date_of_birth) AS age
     FROM df_lending l
     JOIN df_reader r ON l.library_card_number = r.card_number
-    WHERE DATE(l.date_lend) >= "{0}"
+    WHERE date(l.date_lend) >= NOW() - INTERVAL 1 MONTH
     GROUP BY library_card_number
-    ORDER BY lend DESC, "{0}" - DATE(r.date_of_birth);
+    ORDER BY lend DESC, age;
